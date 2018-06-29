@@ -31,6 +31,7 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
   return new Promise((resolve, reject) => {
     const postTemplate = path.resolve("./src/templates/PostTemplate.js");
     const pageTemplate = path.resolve("./src/templates/PageTemplate.js");
+    const categoryTemplate = path.resolve("./src/templates/CategoryTemplate.js");
     resolve(
       graphql(
         `
@@ -43,6 +44,10 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
                     slug
                     prefix
                   }
+                  frontmatter {
+                    title
+                    category
+                  }
                 }
               }
             }
@@ -53,9 +58,35 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
           console.log(result.errors);
           reject(result.errors);
         }
+        const items = result.data.allMarkdownRemark.edges;
 
+        // Create category list
+        const categorySet = new Set();
+        items.forEach(edge => {
+          const {
+            node: {
+              frontmatter: { category }
+            }
+          } = edge;
+
+          if (category && category !== null) {
+            categorySet.add(category);
+          }
+        });
+
+        // Create category pages
+        const categoryList = Array.from(categorySet);
+        categoryList.forEach(category => {
+          createPage({
+            path: `/category/${_.kebabCase(category)}/`,
+            component: categoryTemplate,
+            context: {
+              category
+            }
+          });
+        });
         // Create posts and pages.
-        _.each(result.data.allMarkdownRemark.edges, edge => {
+        _.each(items, edge => {
           const slug = edge.node.fields.slug;
           const isPost = /posts/.test(edge.node.id);
 
