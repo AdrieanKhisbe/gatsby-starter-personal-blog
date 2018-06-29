@@ -2,6 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import injectSheet from "react-jss";
 
+import FaCalendar from "react-icons/lib/fa/calendar";
+import FaTag from "react-icons/lib/fa/tag";
+
 const styles = theme => ({
   header: {
     margin: "0 0 3em"
@@ -37,6 +40,9 @@ const styles = theme => ({
     fontSize: `${theme.main.fonts.meta.size}em`,
     fontWeight: theme.main.fonts.meta.weight,
     color: theme.main.colors.meta
+  },
+  metaItem: {
+    paddingLeft: "10px"
   }
 });
 
@@ -55,8 +61,12 @@ const PostHeader = props => {
       <h1 className={classes.title}>{title}</h1>
       <h2 className={classes.subTitle}>{subTitle}</h2>
       <div className={classes.meta}>
-        <div>{myDate(date)}</div>
-        <div>{category}</div>
+        <span className={classes.metaItem}>
+          <FaCalendar size={18} /> {myDate(date)}
+        </span>
+        <span className={classes.metaItem}>
+          <FaTag size={18} /> {category}
+        </span>
       </div>
     </header>
   );
